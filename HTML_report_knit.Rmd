@@ -1,0 +1,82 @@
+---
+title: "AtlasXomics `r project_name` report"
+output: 
+  rmdformats::robobook 
+---
+* Standard analysis performed without data integration
+
+> created by AtlasXomics bioinformatics team
+
+# Quality Control
+* Filtering criteria is as following:
+
+nFeature_Spatial > `r round(min_nFeature_non_zero, digits = 2)`\
+percent.mt < `r round(max_percent_mito, digits = 2)`\
+percent_hb < `r round(max_percent_hb, digits = 2)`
+
+
+
+```{r on_tiss_stats, fig.width=16, fig.height=9, comment=NA}
+on_tiss_stats_r
+
+cat("##### RNA-seq samples #####")
+qc_rna
+bar_plot_r
+
+
+cat("##### ATAC-seq samples #####")
+frag_tss_Plot
+bar_plot_a
+
+
+```
+
+# Dimensionality reduction and clustering
+
+```{r dimrd, fig.width=16, fig.height=9, comment=NA}
+
+dimrd1_r
+dimrd1_a
+
+sample_bar_plots_r
+sample_bar_plots_a
+
+cat("##### RNA-seq samples #####")
+dimrd3_r
+
+cat("##### ATAC-seq samples #####")
+dimrd3_a
+
+cat("##### RNA-seq samples #####")
+dimrd4_r
+
+cat("##### ATAC-seq samples #####")
+dimrd4_a
+
+```
+
+# Identification of Spatially Variable Features RNA
+
+```{r top_spatial_plots_r, fig.width=16, fig.height=9, comment=NA}
+
+if (rlang::is_empty(top_spatial_plots_r)==TRUE){
+    cat("Not Enough features pass min.pct=0.01 and threshold=0.1")
+
+}else{
+   top_spatial_plots_r
+    }
+
+```
+
+# Identification of Spatially Variable Features ATAC
+
+```{r top_spatial_plots_a, fig.width=16, fig.height=9, comment=NA}
+
+if (rlang::is_empty(top_spatial_plots_a)==TRUE){
+    cat("Not Enough features pass Pval < 0.05 and threshold=0.1")
+
+}else{
+   top_spatial_plots_a
+    }
+
+```
