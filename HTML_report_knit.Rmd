@@ -55,7 +55,7 @@ dimrd4_a
 
 ```
 
-# Identification of Spatially Variable Features RNA
+# Identification of Spatially Variable Features RNA-seq
 
 ```{r top_spatial_plots_r, fig.width=16, fig.height=9, comment=NA}
 
@@ -68,7 +68,7 @@ if (rlang::is_empty(top_spatial_plots_r)==TRUE){
 
 ```
 
-# Identification of Spatially Variable Features ATAC
+# Identification of Spatially Variable Features ATAC-seq
 
 ```{r top_spatial_plots_a, fig.width=16, fig.height=9, comment=NA}
 
