@@ -141,7 +141,7 @@ LaunchPlan(
                 LatchDir('latch:///spatials/demo/spatial/')
                 )
         ],
-        'project_name': 'demo',
+        'project_name': 'coProf',
         'genome': Genome.hg38,
         'spot_size': 1,
         'cluster_resolution': 0.5
