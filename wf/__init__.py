@@ -37,7 +37,14 @@ def coProf_task(runs: List[Run],
                 project_name: str,
                 genome: Genome,
                 spot_size: int,
-                cluster_resolution: float
+                cluster_resolution: float,
+                tile_size: int,
+                min_TSS: float,
+                min_frags: int,
+                lsi_iterations: int,
+                lsi_resolution: float,
+                lsi_varfeatures: int
+
                 ) -> LatchDir:
     output_dir = Path("reports/").resolve()
     os.mkdir(output_dir)
@@ -47,7 +54,13 @@ def coProf_task(runs: List[Run],
             project_name,
             genome.value,
             f'{spot_size}',
-            f'{cluster_resolution}'
+            f'{cluster_resolution}',
+            f'{tile_size}',
+            f'{min_TSS}',
+            f'{min_frags}',
+            f'{lsi_iterations}',
+            f'{lsi_resolution}',
+            f'{lsi_varfeatures}'
         
     ]
     runs = [
@@ -77,7 +90,7 @@ metadata = LatchMetadata(
         'runs': LatchParameter(
             display_name='runs',
             description='List of runs to be analyzed; each run must contain a \
-                        run_id and fragments.tsv.gz file; gene expression and \
+                        run_id and fragments.tsv.gz file; gene expression and  \
                         spatial folder for SpatialDimPlot.',
             batch_table_column=True,
             samplesheet=True
@@ -109,6 +122,47 @@ metadata = LatchMetadata(
             description='resolution parameter for FindClusters function',
             batch_table_column=True,
             hidden=True
+        ),
+        'tile_size': LatchParameter(
+            display_name='tile size',
+            description='The size of the tiles used for binning counts in the \
+                        TileMatrix.',
+            batch_table_column=True,
+            hidden=True
+        ),
+        'min_TSS': LatchParameter(
+            display_name='minimum TSS',
+            description='The minimum numeric transcription start site (TSS) \
+                        enrichment score required for a cell to pass \
+                        filtering.',
+            batch_table_column=True,
+            hidden=True
+        ),
+        'min_frags': LatchParameter(
+            display_name='minimum fragments',
+            description='The minimum number of mapped ATAC-seq fragments \
+                        required per cell to pass filtering.',
+            batch_table_column=True,
+            hidden=True
+        ),
+        'lsi_iterations': LatchParameter(
+            display_name='LSI iterations',
+            description='iterations parameter from addIterativeLSI function.',
+            batch_table_column=True,
+            hidden=True
+        ),
+        'lsi_resolution': LatchParameter(
+            display_name='LSI resolution',
+            description='resolution parameter from \
+                        addIterativeLSI/clusterParams function.',
+            batch_table_column=True
+        ),
+        'lsi_varfeatures': LatchParameter(
+            display_name='LSI varFeatures',
+            description='varFeatures parameter from addIterativeLSI function; \
+                        each will correspond to a umap.pdf, the last in the \
+                        will be used to make the RDS object.',
+            batch_table_column=True
         )},
 )
 @workflow(metadata)
@@ -117,7 +171,13 @@ def coProfiling_workflow(
     genome: Genome,
     project_name: str,
     spot_size: int = 1,
-    cluster_resolution: float = 0.5
+    cluster_resolution: float = 0.5,
+    tile_size: int = 5000,
+    min_TSS: float = 2.0,
+    min_frags: int = 0,
+    lsi_iterations: int = 2,
+    lsi_resolution: float = 0.5,
+    lsi_varfeatures: int = 25000
 ) -> LatchDir:
         reports = coProf_task(
         runs=runs,
@@ -125,6 +185,13 @@ def coProfiling_workflow(
         genome=genome,
         spot_size=spot_size,
         cluster_resolution=cluster_resolution,
+        tile_size=tile_size,
+        min_TSS=min_TSS,
+        min_frags=min_frags,
+        lsi_iterations=lsi_iterations,
+        lsi_resolution=lsi_resolution,
+        lsi_varfeatures=lsi_varfeatures
+
 
     )
         return reports
@@ -141,10 +208,16 @@ LaunchPlan(
                 LatchDir('latch:///spatials/demo/spatial/')
                 )
         ],
-        'project_name': 'coProf',
+        'project_name': 'demo',
         'genome': Genome.hg38,
         'spot_size': 1,
-        'cluster_resolution': 0.5
+        'cluster_resolution': 0.5,
+        'tile_size' : 5000,
+        'min_TSS' : 2.0,
+        'min_frags' : 0,
+        'lsi_iterations' : 2,
+        'lsi_resolution' : 0.5,
+        'lsi_varfeatures' : 25000
     },
 )
 

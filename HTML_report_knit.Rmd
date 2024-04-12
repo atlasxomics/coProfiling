@@ -55,7 +55,7 @@ dimrd4_a
 
 ```
 
-# Identification of Spatially Variable Features RNA-seq
+# Identification of marker Features RNA
 
 ```{r top_spatial_plots_r, fig.width=16, fig.height=9, comment=NA}
 
@@ -68,7 +68,23 @@ if (rlang::is_empty(top_spatial_plots_r)==TRUE){
 
 ```
 
-# Identification of Spatially Variable Features ATAC-seq
+
+# Identification of Spatially Variable Features RNA
+
+```{r top_spatial_plots_r2, fig.width=16, fig.height=9, comment=NA}
+
+if (rlang::is_empty(top_spatial_plots_r2)==TRUE){
+    cat("Not Enough features found by moransi method")
+
+}else{
+   top_spatial_plots_r2
+    }
+
+```
+
+
+
+# Identification of Spatially Variable Features ATAC
 
 ```{r top_spatial_plots_a, fig.width=16, fig.height=9, comment=NA}
 
@@ -77,6 +93,30 @@ if (rlang::is_empty(top_spatial_plots_a)==TRUE){
 
 }else{
    top_spatial_plots_a
+    }
+
+```
+
+
+# Heatmap of Integration
+
+```{r heatmap, fig.width=12, fig.height=10, comment=NA}
+
+heatmap
+
+```
+
+
+
+# Linking peaks to genes
+
+```{r top_coverage_plots_r, fig.width=16, fig.height=12, comment=NA}
+
+if (rlang::is_empty(top_coverage_plots_r)==TRUE){
+    cat("Not Enough features to show coverage")
+
+}else{
+   top_coverage_plots_r
     }
 
 ```

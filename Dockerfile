@@ -1,4 +1,5 @@
-FROM 812206152185.dkr.ecr.us-west-2.amazonaws.com/latch-base:dd8f-main
+#FROM 812206152185.dkr.ecr.us-west-2.amazonaws.com/latch-base:dd8f-main
+FROM 812206152185.dkr.ecr.us-west-2.amazonaws.com/latch-base:fe0b-main
 RUN apt-get update -y
 RUN apt-get install -y gdebi-core 
 RUN apt install -y aptitude
@@ -93,14 +94,23 @@ RUN R -e "BiocManager::install('EnsDb.Mmusculus.v79',ask = FALSE)"
 RUN R -e "install.packages(c('devtools'), repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_github('stuart-lab/signac', ref = 'develop')"
 RUN R -e "install.packages(c('getopt','rmdformats'), repos = 'http://cran.us.r-project.org')"
-COPY HTML_report_knit.Rmd /root/HTML_report_knit.Rmd
 RUN R -e "BiocManager::install('glmGamPoi',ask = FALSE)" 
 RUN wget https://cran.r-project.org/src/contrib/irlba_2.3.5.1.tar.gz
 RUN R CMD INSTALL irlba_2.3.5.1.tar.gz
+RUN R -e "install.packages(c('Rfast2'), repos = 'http://cran.us.r-project.org')"
+RUN R -e "install.packages(c('ape'), repos = 'http://cran.us.r-project.org')"
+RUN apt-get update -y && apt-get -y install libglpk-dev
+RUN R -e "install.packages(c('Seurat'), repos = 'http://cran.us.r-project.org')"
+RUN R -e "install.packages(c('qdap'), repos = 'http://cran.us.r-project.org')"
+RUN apt-get update -y && apt-get -y install tabix
+RUN R -e "BiocManager::install('biovizBase',ask = FALSE)"
+RUN R -e "install.packages(c('ggforce'), repos = 'http://cran.us.r-project.org')"
 # STOP HERE:
 # The following lines are needed to ensure your build environement works
 # correctly with latch.
 RUN python3 -m pip install --upgrade latch
+COPY HTML_report_knit.Rmd /root/HTML_report_knit.Rmd
+COPY addgeneintegrationmatrix.R /root/addgeneintegrationmatrix.R
 COPY wf /root/wf
 ARG tag
 ENV FLYTE_INTERNAL_IMAGE $tag
