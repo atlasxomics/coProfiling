@@ -1,7 +1,7 @@
 ---
 title: "AtlasXomics `r project_name` report"
 output: 
-  rmdformats::robobook 
+  rmdformats::robobook
 ---
 * Standard analysis performed without data integration
 
@@ -14,8 +14,6 @@ nFeature_Spatial > `r round(min_nFeature_non_zero, digits = 2)`\
 percent.mt < `r round(max_percent_mito, digits = 2)`\
 percent_hb < `r round(max_percent_hb, digits = 2)`
 
-
-
 ```{r on_tiss_stats, fig.width=16, fig.height=9, comment=NA}
 on_tiss_stats_r
 
@@ -23,11 +21,9 @@ cat("##### RNA-seq samples #####")
 qc_rna
 bar_plot_r
 
-
 cat("##### ATAC-seq samples #####")
 frag_tss_Plot
 bar_plot_a
-
 
 ```
 
@@ -59,44 +55,37 @@ dimrd4_a
 
 ```{r top_spatial_plots_r, fig.width=16, fig.height=9, comment=NA}
 
-if (rlang::is_empty(top_spatial_plots_r)==TRUE){
-    cat("Not Enough features pass min.pct=0.01 and threshold=0.1")
-
-}else{
-   top_spatial_plots_r
-    }
+if (rlang::is_empty(top_spatial_plots_r) == TRUE) {
+  cat("Not Enough features pass min.pct=0.01 and threshold=0.1")
+} else {
+  top_spatial_plots_r
+}
 
 ```
-
 
 # Identification of Spatially Variable Features RNA
 
 ```{r top_spatial_plots_r2, fig.width=16, fig.height=9, comment=NA}
 
-if (rlang::is_empty(top_spatial_plots_r2)==TRUE){
-    cat("Not Enough features found by moransi method")
-
-}else{
-   top_spatial_plots_r2
-    }
+if (rlang::is_empty(top_spatial_plots_r2) == TRUE) {
+  cat("Not Enough features found by moransi method")
+} else {
+  top_spatial_plots_r2
+}
 
 ```
-
-
 
 # Identification of Spatially Variable Features ATAC
 
 ```{r top_spatial_plots_a, fig.width=16, fig.height=9, comment=NA}
 
-if (rlang::is_empty(top_spatial_plots_a)==TRUE){
-    cat("Not Enough features pass Pval < 0.05 and threshold=0.1")
-
-}else{
-   top_spatial_plots_a
-    }
+if (rlang::is_empty(top_spatial_plots_a) == TRUE) {
+  cat("Not Enough features pass Pval < 0.05 and threshold=0.1")
+} else {
+  top_spatial_plots_a
+}
 
 ```
-
 
 # Heatmap of Integration
 
@@ -106,17 +95,13 @@ heatmap
 
 ```
 
-
-
 # Linking peaks to genes
 
 ```{r top_coverage_plots_r, fig.width=16, fig.height=12, comment=NA}
 
-if (rlang::is_empty(top_coverage_plots_r)==TRUE){
-    cat("Not Enough features to show coverage")
-
-}else{
-   top_coverage_plots_r
-    }
-
+if (rlang::is_empty(top_coverage_plots_r) == TRUE) {
+  cat("Not Enough features to show coverage")
+} else {
+  top_coverage_plots_r
+}
 ```

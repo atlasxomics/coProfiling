@@ -1,13 +1,13 @@
 import os
-import glob
 import subprocess
+
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from dataclasses import dataclass
-from typing import List, Optional, Union, Tuple
-from latch.registry.table import Table
+from typing import List
+
 from latch.resources.launch_plan import LaunchPlan
-from latch import large_task, large_task, small_task, workflow
+from latch import large_task, workflow
 
 from latch.types import (
     LatchAuthor,
@@ -22,46 +22,58 @@ from latch.types import (
 @dataclass
 class Run:
     run_id: str
-    gex_dir: LatchDir = LatchDir("latch:///star_outputs/demo/STAR_outputsGene/raw")
-    fragments_file: LatchFile = LatchFile("latch:///chromap_outputs/demo/chromap_output/fragments.tsv.gz")
-    spatial_dir: LatchDir = LatchDir("latch:///spatials/demo/spatial/")
-    
-    
+    gex_dir: LatchDir = LatchDir(
+        "latch:///star_outputs/demo/STAR_outputsGene/raw"
+    )
+    fragments_file: LatchFile = LatchFile(
+        "latch:///chromap_outputs/demo/chromap_output/fragments.tsv.gz"
+    )
+    spatial_dir: LatchDir = LatchDir(
+        "latch:///spatials/demo/spatial/"
+    )
+
 
 class Genome(Enum):
     mm10 = 'mm10'
     hg38 = 'hg38'
 
-@large_task(retries=0)
-def coProf_task(runs: List[Run],
-                project_name: str,
-                genome: Genome,
-                spot_size: int,
-                cluster_resolution: float,
-                tile_size: int,
-                min_TSS: float,
-                min_frags: int,
-                lsi_iterations: int,
-                lsi_resolution: float,
-                lsi_varfeatures: int
 
-                ) -> LatchDir:
+@large_task(retries=0)
+def coProf_task(
+    runs: List[Run],
+    project_name: str,
+    genome: Genome,
+    spot_size: int,
+    cluster_resolution: float,
+    tile_size: int,
+    min_TSS: float,
+    min_frags: int,
+    lsi_iterations: int,
+    lsi_resolution: float,
+    lsi_varfeatures: int
+) -> LatchDir:
+
     output_dir = Path("reports/").resolve()
-    os.mkdir(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Turn on virtual dev for png in Rmd
+    _xvfb_cmd = ['Xvfb', ':99', '-screen', '0', '1024x768x16']
+    subprocess.Popen(_xvfb_cmd)
+    os.environ['DISPLAY'] = ':99'
+
     _report_cmd = [
-            "Rscript",
-            "/root/wf/coProf.R",
-            project_name,
-            genome.value,
-            f'{spot_size}',
-            f'{cluster_resolution}',
-            f'{tile_size}',
-            f'{min_TSS}',
-            f'{min_frags}',
-            f'{lsi_iterations}',
-            f'{lsi_resolution}',
-            f'{lsi_varfeatures}'
-        
+        "Rscript",
+        "/root/wf/coProf.R",
+        project_name,
+        genome.value,
+        f'{spot_size}',
+        f'{cluster_resolution}',
+        f'{tile_size}',
+        f'{min_TSS}',
+        f'{min_frags}',
+        f'{lsi_iterations}',
+        f'{lsi_resolution}',
+        f'{lsi_varfeatures}'
     ]
     runs = [
         (
@@ -75,7 +87,12 @@ def coProf_task(runs: List[Run],
 
     _report_cmd.extend(runs)
     subprocess.run(_report_cmd)
-    return LatchDir(str(output_dir), f"latch:///coProfiling_outputs/{project_name}/reports")
+
+    return LatchDir(
+        str(output_dir),
+        f"latch:///coProfiling_outputs/{project_name}/reports"
+    )
+
 
 metadata = LatchMetadata(
     display_name='coProfiling_wf',
@@ -90,12 +107,12 @@ metadata = LatchMetadata(
         'runs': LatchParameter(
             display_name='runs',
             description='List of runs to be analyzed; each run must contain a \
-                        run_id and fragments.tsv.gz file; gene expression and  \
-                        spatial folder for SpatialDimPlot.',
+                        run_id and fragments.tsv.gz file; gene expression \
+                        and spatial folder for SpatialDimPlot.',
             batch_table_column=True,
             samplesheet=True
         ),
-            'project_name': LatchParameter(
+        'project_name': LatchParameter(
             display_name='project name',
             description='Name of output directory in coProfiling_outputs/',
             batch_table_column=True,
@@ -165,6 +182,8 @@ metadata = LatchMetadata(
             batch_table_column=True
         )},
 )
+
+
 @workflow(metadata)
 def coProfiling_workflow(
     runs: List[Run],
@@ -179,7 +198,8 @@ def coProfiling_workflow(
     lsi_resolution: float = 0.5,
     lsi_varfeatures: int = 25000
 ) -> LatchDir:
-        reports = coProf_task(
+
+    reports = coProf_task(
         runs=runs,
         project_name=project_name,
         genome=genome,
@@ -191,10 +211,9 @@ def coProfiling_workflow(
         lsi_iterations=lsi_iterations,
         lsi_resolution=lsi_resolution,
         lsi_varfeatures=lsi_varfeatures
-
-
     )
-        return reports
+    return reports
+
 
 LaunchPlan(
     coProfiling_workflow,
@@ -212,13 +231,34 @@ LaunchPlan(
         'genome': Genome.hg38,
         'spot_size': 1,
         'cluster_resolution': 0.5,
-        'tile_size' : 5000,
-        'min_TSS' : 2.0,
-        'min_frags' : 0,
-        'lsi_iterations' : 2,
-        'lsi_resolution' : 0.5,
-        'lsi_varfeatures' : 25000
+        'tile_size': 5000,
+        'min_TSS': 2.0,
+        'min_frags': 0,
+        'lsi_iterations': 2,
+        'lsi_resolution': 0.5,
+        'lsi_varfeatures': 25000
     },
 )
 
+if __name__ == "__main__":
 
+    coProf_task(
+        runs=[
+            Run(
+                run_id="D1372",
+                gex_dir="latch://13502.account/star_outputs/merged_D1372_D1373/STAR_outputs/D01372_NG02965_STAR_outputsGene/raw",
+                fragments_file="latch://13502.account/noori_sample_fqs/test/fragments.tsv.gz",
+                spatial_dir="latch://atx-illumina.mount/Images_spatial/D1372/spatial"
+            )
+        ],
+        project_name="D1372_dev",
+        genome=Genome("mm10"),
+        spot_size=1,
+        cluster_resolution=0.5,
+        tile_size=5000,
+        min_TSS=2.0,
+        min_frags=0,
+        lsi_iterations=2,
+        lsi_resolution=0.5,
+        lsi_varfeatures=25000
+    )
