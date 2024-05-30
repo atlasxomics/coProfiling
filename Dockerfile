@@ -94,6 +94,10 @@ RUN apt-get update -y && \
 COPY HTML_report_knit.Rmd /root/HTML_report_knit.Rmd
 COPY addgeneintegrationmatrix.R /root/addgeneintegrationmatrix.R
 
+# Copy files for .renvbignore
+COPY coProfiling.Rproj /root/coProfiling.Rproj
+COPY .renvignore /root/.renvignore
+
 # STOP HERE:
 # The following lines are needed to ensure your build environement works
 # correctly with latch.
