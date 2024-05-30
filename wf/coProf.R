@@ -35,7 +35,6 @@ qc_stats_df <- function(seurat_object, row.name) {
   return(df)
 }
 
-dir.create(file.path("reports"), recursive = TRUE)
 setwd("/root/reports")
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -1112,8 +1111,6 @@ fragpath <- "/root/reports/merged_fragments.tsv.gz"
 counts <- CountFragments(fragments = fragpath, verbose = FALSE)
 frags <- CreateFragmentObject(path = fragpath, cells = counts$CB)
 
-species <- args[2]
-
 if (species == "mm10") {
   genome1 <- seqlengths(BSgenome.Mmusculus.UCSC.mm10)
 } else if (species == "hg38") {
@@ -1132,7 +1129,7 @@ bin_matrix <- GenomeBinMatrix(
 if (species == "mm10") {
   genome2 <- "mm10"
 }else if (species == "hg38") {
-  genome2 <= "hg38"
+  genome2 <- "hg38"
 } else {
   genome2 <- "rn6"
 }
@@ -1235,13 +1232,12 @@ df <- df[match(colnames(signac_obj), rownames(df)), ]
 signac_obj@meta.data <- df
 
 # linking peaks to genes
-genome <- args[2]
-
-if (genome == "hg38") {
+if (species == "hg38") {
   bsgenome <- BSgenome.Hsapiens.UCSC.hg38
 } else {
   bsgenome <- BSgenome.Mmusculus.UCSC.mm10
 }
+
 DefaultAssay(signac_obj) <- "peaks"
 
 # first compute the GC content for each peak
