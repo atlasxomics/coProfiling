@@ -180,7 +180,8 @@ metadata = LatchMetadata(
                         each will correspond to a umap.pdf, the last in the \
                         will be used to make the RDS object.",
             batch_table_column=True
-        )},
+        )
+    },
 )
 
 
